@@ -1,0 +1,129 @@
+CREATING THE CUSTOMERS TABLE 
+
+create table customers(
+customer_id int primary key,
+customer_name varchar(50),
+customer_contactnum varchar(15),
+customer_city varchar(20)
+);
+
+CREATING THE PRODUCTS TABLE 
+ create table products(
+ product_id int primary key,
+ product_name varchar(20),
+ product_category varchar(50),
+ product_price decimal(7,2)
+  );
+
+
+CREATING THE ORDERS TABLE 
+create table orders(
+ order_id int primary key,
+ customer_id int,
+ customer_name varchar(50),
+ order_date date,
+ foreign key(customer_id) references customers(customer_id)
+ );
+
+
+CREATING TABLE ORDER ITEMS 
+
+create table order_items(
+ order_id int,
+  product_id int,
+  quantity int,
+  foreign key(order_id) references orders(order_id),
+  foreign key(product_id) references products(product_id)
+  );
+
+
+INSERTING VALUES INTO TABLE CUSTOMERS
+insert into customers values (1, 'Saketh', '999xxxx', 'Hyderabad');
+insert into customers values (2, 'Rohan', '9999xxx', 'Hyderabad');
+insert into customers values (3, 'Varshith', '999xxx', 'Chennai');
+insert into customers values (4, 'Manas', '9999xxx', 'Chennai');
+insert into customers values (5, 'Deekshith', '9999xxx', 'Delhi');
+insert into customers values (6, 'Sriram', '9999xxx', 'Hyderabad');
+insert into customers values (7, 'Jaggu', '9999xxx', 'Mumbai');
+
+
+
+INSERTING VALUES INTO TABLE PRODUCTS
+insert into products values (101, 'Laptop', 'Laptop', 60000.00);
+insert into products values (102, 'Gaming Laptop', 'Laptop', 80000.00);
+insert into products values (103, 'Smartphone', 'Mobile', 25000.00);
+insert into products values (104, 'Tablet', 'Mobile', 20000.00);
+insert into products values (105, 'Smartwatch', 'Wearables', 5000.00);
+insert into products values (106, 'Headphones', 'Accessories', 1500.00);
+insert into products values (107, 'Bluetooth Speaker', 'Accessories', 2500.00);
+
+
+INSERTING VALUES INTO TABLE ORDERS 
+insert into orders values (1001, 1, 'Saketh', DATE '2025-01-10');
+insert into orders values (1002, 2, 'Rohan', DATE '2025-01-12');
+insert into orders values (1003, 3, 'Varshith', DATE '2025-01-15');
+insert into orders values (1004, 1, 'Saketh', DATE '2025-02-01');
+insert into orders values (1005, 4, 'Manas', DATE '2025-02-05');
+insert into orders values (1006, 5, 'Deekshith', DATE '2025-02-10');
+insert into orders values (1007, 6, 'Sriram', DATE '2025-02-12');
+insert into orders values (1008, 7, 'Jaggu', DATE '2025-02-15');
+
+
+INSERTING VALUES INTO TABLE ORDER ITEMS (NO OF ITEMS)
+insert into order_items values (1001, 101, 1);
+insert into order_items values (1001, 103, 2);
+insert into order_items values (1002, 103, 1);
+insert into order_items values (1002, 105, 1);
+insert into order_items values (1003, 104, 1);
+insert into order_items values (1004, 101, 1);
+insert into order_items values (1005, 107, 2);
+insert into order_items values (1005, 106, 1);
+insert into order_items values (1006, 102, 1);
+insert into order_items values (1007, 103, 2);
+insert into order_items values (1008, 105, 1);
+
+QUERY FOR FINDING THE TOP SELLING PRODUCTS 
+select p.product_name, sum(oi.quantity) total_sold
+from order_items oi, products p
+where oi.product_id = p.product_id
+group by p.product_name
+order by total_sold desc;
+ 
+QUERY FOR FINDING THE MOST VALUED CUSTOMER BY TAKING TOTAL MONEY SPENT ON PRODUCTS TO PURCHASE
+select customers.customer_name, 
+sum(order_items.quantity * products.product_price) as totalmoney
+from customers, orders, order_items, products
+where customers.customer_id = orders.customer_id
+and orders.order_id = order_items.order_id
+and order_items.product_id = products.product_id
+group by customers.customer_name
+order by totalmoney desc;
+
+QUERY FOR FINDING THE MONTHLY REVENUE
+select to_char(order_date,'YYYY-MM') month,
+sum(quantity * product_price) revenue
+from orders, order_items, products
+where orders.order_id = order_items.order_id
+and order_items.product_id = products.product_id
+group by to_char(order_date,'YYYY-MM')
+order by month;
+
+QUERY FOR FINDING THE SALES BASED ON CATEGORY
+select product_category,
+sum(quantity * product_price) as total
+from order_items, products
+where order_items.product_id = products.product_id
+group by product_category
+order by total desc;
+
+INACTICE CUSTOMER FINDING
+select customer_name from customers where customer_id not in (select customer_id from orders);
+
+
+
+
+
+
+
+
+

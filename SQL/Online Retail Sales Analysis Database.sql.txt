@@ -116,7 +116,7 @@ where order_items.product_id = products.product_id
 group by product_category
 order by total desc;
 
-INACTICE CUSTOMER FINDING
+INACTIVE CUSTOMER FINDING
 select customer_name from customers where customer_id not in (select customer_id from orders);
 
 
